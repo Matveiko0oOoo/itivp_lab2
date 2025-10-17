@@ -1,0 +1,92 @@
+{
+	"info": {
+		"name": "Vacancies API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get all vacancies",
+			"request": {
+				"method": "GET",
+				"header": [
+					{ "key": "X-API-Key", "value": "{{api_key}}" }
+				],
+				"url": {
+					"raw": "{{base_url}}/api/vacancies",
+					"host": ["{{base_url}}"],
+					"path": ["api","vacancies"]
+				}
+			}
+		},
+		{
+			"name": "Get vacancy by id",
+			"request": {
+				"method": "GET",
+				"header": [
+					{ "key": "X-API-Key", "value": "{{api_key}}" }
+				],
+				"url": {
+					"raw": "{{base_url}}/api/vacancies/1",
+					"host": ["{{base_url}}"],
+					"path": ["api","vacancies","1"]
+				}
+			}
+		},
+		{
+			"name": "Create vacancy",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "X-API-Key", "value": "{{api_key}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Backend Developer\",\n  \"description\": \"PHP, MySQL\",\n  \"requirements\": \"3+ years\",\n  \"salary_range\": \"$2000-$3000\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/vacancies",
+					"host": ["{{base_url}}"],
+					"path": ["api","vacancies"]
+				}
+			}
+		},
+		{
+			"name": "Update vacancy",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{ "key": "X-API-Key", "value": "{{api_key}}" },
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"Senior Backend Developer\",\n  \"description\": \"PHP, MySQL, Docker\",\n  \"requirements\": \"5+ years\",\n  \"salary_range\": \"$3000-$4000\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/vacancies/1",
+					"host": ["{{base_url}}"],
+					"path": ["api","vacancies","1"]
+				}
+			}
+		},
+		{
+			"name": "Delete vacancy",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{ "key": "X-API-Key", "value": "{{api_key}}" }
+				],
+				"url": {
+					"raw": "{{base_url}}/api/vacancies/1",
+					"host": ["{{base_url}}"],
+					"path": ["api","vacancies","1"]
+				}
+			}
+		}
+	],
+	"variable": [
+		{ "key": "base_url", "value": "http://localhost:8080" },
+		{ "key": "api_key", "value": "" }
+	]
+}

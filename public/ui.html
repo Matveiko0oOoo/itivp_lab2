@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Vacancies API Demo</title>
+	<style>
+		body { font-family: Arial, sans-serif; margin: 20px; }
+		input, textarea { width: 100%; padding: 8px; margin: 4px 0; }
+		button { padding: 8px 12px; margin: 4px 0; }
+		.container { max-width: 900px; margin: 0 auto; }
+		.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+		.card { border: 1px solid #ddd; padding: 12px; border-radius: 6px; }
+		code { background: #f6f8fa; padding: 2px 4px; border-radius: 4px; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Vacancies API Demo</h1>
+		<p>Укажите ваш <code>X-API-Key</code> для запросов:</p>
+		<input id="apiKey" placeholder="X-API-Key" />
+		<button onclick="loadAll()">Загрузить все вакансии</button>
+		<div class="grid">
+			<div class="card">
+				<h3>Создать вакансию</h3>
+				<input id="title" placeholder="title" />
+				<textarea id="description" placeholder="description"></textarea>
+				<textarea id="requirements" placeholder="requirements"></textarea>
+				<input id="salary_range" placeholder="salary_range" />
+				<button onclick="createVacancy()">Создать</button>
+			</div>
+			<div class="card">
+				<h3>Обновить/Удалить вакансию</h3>
+				<input id="upd_id" placeholder="id" />
+				<input id="upd_title" placeholder="title" />
+				<textarea id="upd_description" placeholder="description"></textarea>
+				<textarea id="upd_requirements" placeholder="requirements"></textarea>
+				<input id="upd_salary_range" placeholder="salary_range" />
+				<button onclick="updateVacancy()">Обновить</button>
+				<button onclick="deleteVacancy()">Удалить</button>
+			</div>
+		</div>
+		<h3>Результат</h3>
+		<pre id="out"></pre>
+	</div>
+	<script>
+		function getHeaders() {
+			const key = document.getElementById('apiKey').value.trim();
+			return {
+				'Content-Type': 'application/json',
+				'X-API-Key': key || ''
+			};
+		}
+		function setOut(data){
+			document.getElementById('out').textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+		}
+		async function loadAll(){
+			const res = await fetch('/api/vacancies', { headers: getHeaders() });
+			const data = await res.json();
+			setOut(data);
+		}
+		async function createVacancy(){
+			const body = {
+				title: document.getElementById('title').value,
+				description: document.getElementById('description').value,
+				requirements: document.getElementById('requirements').value,
+				salary_range: document.getElementById('salary_range').value,
+			};
+			const res = await fetch('/api/vacancies', { method: 'POST', headers: getHeaders(), body: JSON.stringify(body) });
+			const data = await res.json();
+			setOut(data);
+		}
+		async function updateVacancy(){
+			const id = document.getElementById('upd_id').value;
+			const body = {
+				title: document.getElementById('upd_title').value,
+				description: document.getElementById('upd_description').value,
+				requirements: document.getElementById('upd_requirements').value,
+				salary_range: document.getElementById('upd_salary_range').value,
+			};
+			const res = await fetch('/api/vacancies/' + encodeURIComponent(id), { method: 'PUT', headers: getHeaders(), body: JSON.stringify(body) });
+			const data = await res.json();
+			setOut(data);
+		}
+		async function deleteVacancy(){
+			const id = document.getElementById('upd_id').value;
+			const res = await fetch('/api/vacancies/' + encodeURIComponent(id), { method: 'DELETE', headers: getHeaders() });
+			const data = await res.json();
+			setOut(data);
+		}
+	</script>
+</body>
+</html>

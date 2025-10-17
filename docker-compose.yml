@@ -1,0 +1,33 @@
+services:
+  app:
+    build: .
+    container_name: php_api_app
+    ports:
+      - "8080:80"
+    environment:
+      - APP_ENV=local
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=vacancies_db
+      - DB_USER=vacancies_user
+      - DB_PASS=vacancies_pass
+      - API_KEY_OUTPUT_PATH=/var/www/html/.generated_api_key.txt
+    depends_on:
+      - db
+    volumes:
+      - ./:/var/www/html
+  db:
+    image: mysql:8.0
+    container_name: php_api_db
+    environment:
+      - MYSQL_DATABASE=vacancies_db
+      - MYSQL_USER=vacancies_user
+      - MYSQL_PASSWORD=vacancies_pass
+      - MYSQL_ROOT_PASSWORD=rootpass
+    ports:
+      - "33060:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+volumes:
+  db_data:
