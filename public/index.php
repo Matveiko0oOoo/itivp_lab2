@@ -16,14 +16,12 @@ $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri = $_SERVER['REQUEST_URI'] ?? '/';
 $path = parse_url($uri, PHP_URL_PATH) ?: '/';
 
-// Serve a minimal UI when visiting / (HTML)
 if ($path === '/' || $path === '/ui') {
 	header('Content-Type: text/html; charset=utf-8');
 	readfile(__DIR__ . '/ui.html');
 	exit;
 }
 
-// Only allow paths under /api
 if (strpos($path, '/api') !== 0) {
 	http_response_code(404);
 	echo json_encode(['error' => 'Not found']);
@@ -32,16 +30,13 @@ if (strpos($path, '/api') !== 0) {
 
 $pdo = App\Config\Database::getConnection();
 
-// Require API key for all API endpoints
 App\Config\Auth::requireApiKey($pdo);
 
-// Routing: /api/vacancies and /api/vacancies/{id}
-$segments = array_values(array_filter(explode('/', $path))); // e.g. ['api','vacancies','123']
+$segments = array_values(array_filter(explode('/', $path)));
 
 if (count($segments) >= 2 && $segments[0] === 'api' && $segments[1] === 'vacancies') {
 	$model = new App\Models\VacancyModel($pdo);
 
-	// Helper to read JSON body safely
 	$readJson = function (): array {
 		$raw = file_get_contents('php://input');
 		$data = json_decode($raw ?: '[]', true);
@@ -54,14 +49,12 @@ if (count($segments) >= 2 && $segments[0] === 'api' && $segments[1] === 'vacanci
 	};
 
 	if ($method === 'GET' && count($segments) === 2) {
-		// GET /api/vacancies
 		$rows = $model->getAll();
 		echo json_encode($rows);
 		exit;
 	}
 
 	if ($method === 'GET' && count($segments) === 3) {
-		// GET /api/vacancies/{id}
 		$id = (int)$segments[2];
 		if ($id <= 0) {
 			http_response_code(400);
@@ -79,7 +72,6 @@ if (count($segments) >= 2 && $segments[0] === 'api' && $segments[1] === 'vacanci
 	}
 
 	if ($method === 'POST' && count($segments) === 2) {
-		// POST /api/vacancies
 		$data = $readJson();
 		$title = isset($data['title']) && is_string($data['title']) ? trim($data['title']) : '';
 		if ($title === '') {
@@ -100,7 +92,6 @@ if (count($segments) >= 2 && $segments[0] === 'api' && $segments[1] === 'vacanci
 	}
 
 	if (($method === 'PUT' || $method === 'PATCH') && count($segments) === 3) {
-		// PUT /api/vacancies/{id}
 		$id = (int)$segments[2];
 		if ($id <= 0) {
 			http_response_code(400);
@@ -131,7 +122,6 @@ if (count($segments) >= 2 && $segments[0] === 'api' && $segments[1] === 'vacanci
 	}
 
 	if ($method === 'DELETE' && count($segments) === 3) {
-		// DELETE /api/vacancies/{id}
 		$id = (int)$segments[2];
 		if ($id <= 0) {
 			http_response_code(400);
